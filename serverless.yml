@@ -1,0 +1,63 @@
+service: pwhint-store-sqsworker
+
+# pin to a specific Serverless version
+# frameworkVersion: "=1.29.1"
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs8.10
+  deploymentBucket: forgotpw-deploy-${opt:awsEnv, 'dev'}
+  stage: live
+  logRetentionInDays: 14 # cloudwatch logs
+  iamRoleStatements:
+    -
+      Effect: Allow
+      Action:
+        - sqs:GetQueueUrl
+        - sqs:ReceiveMessage
+      Resource:
+        - 'Fn::Join':
+          - ':'
+          -
+            - 'arn:aws:sqs'
+            - Ref: 'AWS::Region'
+            - Ref: 'AWS::AccountId'
+            - 'forgotpw-pwhint-store'
+
+plugins:
+  - serverless-mocha-plugin
+
+functions:
+  fpw-pwhint-store-sqsworker:
+    name: 'fpw-pwhint-store-sqsworker'
+    handler: index.handler
+    package:
+      exclude:
+        - .git/**
+    environment:
+      STORE_SQS_QUEUE_NAME: fpw-pwhint-store-request
+      LOG_LEVEL: 'debug'
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - "StorePwhintSQSQueue"
+              - "Arn"
+          batchSize: 10
+
+resources:
+  Resources:
+    StorePwhintSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties: 
+        QueueName: fpw-pwhint-store-request
+        ReceiveMessageWaitTimeSeconds: 20
+        VisibilityTimeout: 30
+    StorePwhintSNSSubscription:
+      DependsOn: StorePwhintSQSQueue
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-pwhint-store-request" ] ]  }
+        Protocol: SQS
+        TopicArn: { "Fn::Join" : ["", ["arn:aws:sns:us-east-1:", { "Ref" : "AWS::AccountId" }, ":fpw-pwhint-store-request" ] ]  }

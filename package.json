@@ -1,0 +1,18 @@
+{
+  "name": "forgotpw-pwhint-store-sqsworker",
+  "version": "0.0.1",
+  "description": "Process events to store password hints.  When requests are submitted from the REST API to store password hints, an SNS event is fired.  An SQS queue subscribes to these events and this worker processes these SQS messages.",
+  "main": "handler.js",
+  "author": "dwkerwin@gmail.com",
+  "private": true,
+  "dependencies": {
+    "aws-sdk": "^2.292.0"
+  },
+  "devDependencies": {
+    "serverless": "^1.30.0",
+    "serverless-mocha-plugin": "^1.8.3"
+  },
+  "scripts": {
+    "test": "sls invoke test"
+  }
+}
