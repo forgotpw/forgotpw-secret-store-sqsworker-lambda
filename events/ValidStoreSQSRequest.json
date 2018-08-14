@@ -1,7 +1,7 @@
 {
   "Records": [
     {
-      "body": "Hello from SQS!",
+      "body": "{\"action\":\"store\",\"hint\":\"my test hint\",\"application\":\"amazon.com\",\"rawPhone\":\"609-555-1212\",\"normalizedPhone\":\"6095551212\"}",
       "receiptHandle": "MessageReceiptHandle",
       "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
       "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",

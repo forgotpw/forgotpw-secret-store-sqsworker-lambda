@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk');
 const config = require('./config')
+const logger = require('./logger')
 const PwhintStoreService = require('./pwhintStoreService/pwhintStoreService')
 
 async function handler(event, context, done) {
@@ -30,11 +31,16 @@ async function deleteMessage(receiptHandle) {
 }
 
 async function processMessage(messageBody) {
-  console.log('messageBody:', messageBody)
-  return Promise.resolve()
-  // const pwhintStoreService = new PwhintStoreService()
-  // await pwhintStoreService.StorePwhint()
+  const message = JSON.parse(messageBody)
 
+  if (message.action != 'store')
+    throw Error('Unexpected action in message: ' + message.action)
+
+  const pwhintStoreService = new PwhintStoreService()
+  await pwhintStoreService.StorePwhint(
+    message.hint,
+    message.application,
+    message.normalizedPhone)
   await deleteMessage(event.ReceiptHandle)
 }
 
