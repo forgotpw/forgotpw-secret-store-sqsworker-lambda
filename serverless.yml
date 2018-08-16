@@ -37,6 +37,7 @@ functions:
         - .git/**
     environment:
       STORE_SQS_QUEUE_NAME: fpw-pwhint-store-request
+      USERDATA_S3_BUCKET: forgotpw-userdata-${opt:awsEnv, 'dev'}
       LOG_LEVEL: 'debug'
     events:
       - sqs:

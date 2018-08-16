@@ -1,6 +1,6 @@
 'use strict';
 
-const AWS = require('aws-sdk');
+const AWS = require('aws-sdk')
 const config = require('./config')
 const logger = require('./logger')
 const PwhintStoreService = require('./pwhintStoreService/pwhintStoreService')
@@ -26,7 +26,7 @@ async function deleteMessage(receiptHandle) {
   logger.debug(`Deleting message with receiptHandle ${receiptHandle} for queueUrl: ${queueUrl}`)
 
   if (receiptHandle === 'MessageReceiptHandle') {
-    logger.info('Skipping delete message, receipt handle indicates local testing')
+    logger.warn('Skipping delete message, receipt handle indicates local testing')
   } else {
     await sqs.deleteMessage({
       ReceiptHandle: receiptHandle,
