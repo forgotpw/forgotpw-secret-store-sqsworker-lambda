@@ -26,8 +26,6 @@ sls \
 
 ## Invoke Locally
 
-Initial setup:
-
 ```shell
 # ensure we are matching the version of node used by lambda
 nvm use 8.10.0

@@ -9,7 +9,7 @@ async function handler(event, context, done) {
   try {
     let promises = []
     for (let message of event.Records) {
-      promises.push(processMessage(message.body))
+      promises.push(processMessage(message.body, message.receiptHandle))
     }
     await Promise.all(promises)
     done()
@@ -22,15 +22,20 @@ async function handler(event, context, done) {
 async function deleteMessage(receiptHandle) {
   const sqs = new AWS.SQS({region: config.AWS_REGION});
   const awsAccountId = await getAwsAccountId()
-  const queueUrl = `https://sqs.${config.AWS_REGION}.amazonaws.com/${awsAccountId}/${config.STORE_SQS_QUEUE_NAME}}`
+  const queueUrl = `https://sqs.${config.AWS_REGION}.amazonaws.com/${awsAccountId}/${config.STORE_SQS_QUEUE_NAME}`
+  logger.debug(`Deleting message with receiptHandle ${receiptHandle} for queueUrl: ${queueUrl}`)
 
-  await sqs.deleteMessage({
-    ReceiptHandle: receiptHandle,
-    QueueUrl: queueUrl
-  }).promise()
+  if (receiptHandle === 'MessageReceiptHandle') {
+    logger.info('Skipping delete message, receipt handle indicates local testing')
+  } else {
+    await sqs.deleteMessage({
+      ReceiptHandle: receiptHandle,
+      QueueUrl: queueUrl
+    }).promise()
+  }
 }
 
-async function processMessage(messageBody) {
+async function processMessage(messageBody, receiptHandle) {
   const message = JSON.parse(messageBody)
 
   if (message.action != 'store')
@@ -41,7 +46,7 @@ async function processMessage(messageBody) {
     message.hint,
     message.application,
     message.normalizedPhone)
-  await deleteMessage(event.ReceiptHandle)
+  await deleteMessage(receiptHandle)
 }
 
 async function getAwsAccountId() {
