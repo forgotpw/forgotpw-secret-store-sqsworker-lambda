@@ -44,8 +44,11 @@ async function deleteMessage(receiptHandle) {
 async function processMessage(messageBody, receiptHandle) {
   const message = JSON.parse(messageBody)
 
-  if (message.action != 'store')
-    throw Error('Unexpected action in message: ' + message.action)
+  if (message.action != 'store') {
+    let msg = 'Expected message action "store" but encountered unexpected action: ' + message.action
+    logger.error(msg)
+    throw Error(msg)
+  }
 
   const pwhintStoreService = new PwhintStoreService()
   await pwhintStoreService.StorePwhint(
