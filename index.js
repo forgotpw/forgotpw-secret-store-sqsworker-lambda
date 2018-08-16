@@ -28,10 +28,16 @@ async function deleteMessage(receiptHandle) {
   if (receiptHandle === 'MessageReceiptHandle') {
     logger.warn('Skipping delete message, receipt handle indicates local testing')
   } else {
-    await sqs.deleteMessage({
-      ReceiptHandle: receiptHandle,
-      QueueUrl: queueUrl
-    }).promise()
+    try {
+      await sqs.deleteMessage({
+        ReceiptHandle: receiptHandle,
+        QueueUrl: queueUrl
+      }).promise()
+    }
+    catch (err) {
+      logger.error(`Error deleting message with receiptHandle ${receiptHandle}:`, err)
+      throw err
+    }
   }
 }
 

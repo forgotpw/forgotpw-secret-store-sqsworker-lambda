@@ -20,16 +20,22 @@ class PwhintStoreService {
 
     logger.debug(`Updating ${body.length} chars to s3://${config.USERDATA_S3_BUCKET}/${s3key}`)
 
-    const s3 = new AWS.S3();
-    let resp = await s3.putObject({
-      Bucket: config.USERDATA_S3_BUCKET,
-      Key: s3key,
-      ServerSideEncryption: 'AES256',
-      Body: body,
-      ContentType: 'application/json'
-    }).promise()
-
-    logger.trace(`S3 PutObject response for s3://${config.USERDATA_S3_BUCKET}/${s3key}:`, resp)
+    try {
+      const s3 = new AWS.S3();
+      let resp = await s3.putObject({
+        Bucket: config.USERDATA_S3_BUCKET,
+        Key: s3key,
+        ServerSideEncryption: 'AES256',
+        Body: body,
+        ContentType: 'application/json'
+      }).promise()
+  
+      logger.trace(`S3 PutObject response for s3://${config.USERDATA_S3_BUCKET}/${s3key}:`, resp)
+    }
+    catch (err) {
+      logger.error(`Error updating s3://${config.USERDATA_S3_BUCKET}/${s3key}:`, err)
+      throw err
+    }
 
     logger.info(`Successfully updated ${body.length} chars to s3://${config.USERDATA_S3_BUCKET}/${s3key}`)
   }

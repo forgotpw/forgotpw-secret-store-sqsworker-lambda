@@ -55,6 +55,17 @@ resources:
         QueueName: fpw-pwhint-store-request
         ReceiveMessageWaitTimeSeconds: 20
         VisibilityTimeout: 30
+        MessageRetentionPeriod: 345600 # seconds (4 days)
+        RedrivePolicy: 
+          deadLetterTargetArn: 
+            Fn::GetAtt: 
+              - "StorePwhintSQSQueueDeadletter"
+              - "Arn"
+          maxReceiveCount: 5
+    StorePwhintSQSQueueDeadletter:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: fpw-pwhint-store-request-deadletter
     StorePwhintSNSSubscription:
       DependsOn: StorePwhintSQSQueue
       Type: AWS::SNS::Subscription
