@@ -6,10 +6,16 @@ const logger = require('./logger')
 const PwhintStoreService = require('./pwhintStoreService/pwhintStoreService')
 
 async function handler(event, context, done) {
+  // raw console log output easier to copy/paste json from cloudwatch logs
+  if (process.env.LOG_LEVEL == 'trace') {
+    console.log('Event: ', JSON.stringify(event))
+  }
+
   try {
     let promises = []
-    for (let message of event.Records) {
-      promises.push(processMessage(message.body, message.receiptHandle))
+    for (let record of event.Records) {
+      let snsRecordBody = JSON.parse(record.body)
+      promises.push(processMessage(snsRecordBody.Message, record.receiptHandle))
     }
     await Promise.all(promises)
     done()
@@ -45,7 +51,7 @@ async function processMessage(messageBody, receiptHandle) {
   const message = JSON.parse(messageBody)
 
   if (message.action != 'store') {
-    let msg = 'Expected message action "store" but encountered unexpected action: ' + message.action
+    let msg = "Expected message action 'store' but encountered unexpected action: " + message.action
     logger.error(msg)
     throw Error(msg)
   }

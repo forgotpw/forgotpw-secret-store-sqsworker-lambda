@@ -24,6 +24,11 @@ provider:
             - Ref: 'AWS::Region'
             - Ref: 'AWS::AccountId'
             - 'forgotpw-pwhint-store'
+    -
+      Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: arn:aws:s3:::forgotpw-userdata-*
 
 plugins:
   - serverless-mocha-plugin
@@ -62,6 +67,26 @@ resources:
               - "StorePwhintSQSQueueDeadletter"
               - "Arn"
           maxReceiveCount: 5
+    StorePwhintSQSQueuePolicy:
+      Type: 'AWS::SQS::QueuePolicy'
+      Properties:
+        PolicyDocument:
+          Version: '2012-10-17'
+          Id: sqspolicy
+          Statement:
+            - Sid: SendMessage-To-Queue-From-SNS-Topic
+              Effect: Allow
+              Principal: "*"
+              Action:
+                - 'sqs:SendMessage'
+              Resource: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-pwhint-store-request" ] ] }
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: { "Fn::Join" : ["", ["arn:aws:sns:", { "Ref" : "AWS::Region" }, ":", { "Ref" : "AWS::AccountId" }, ":fpw-pwhint-store-request" ] ] }
+        Queues:
+          - { "Fn::Join" : ["", ["https://sqs.", { "Ref" : "AWS::Region" }, ".amazonaws.com/", { "Ref" : "AWS::AccountId" }, "/fpw-pwhint-store-request" ] ] }
+      DependsOn:
+        - StorePwhintSQSQueue
     StorePwhintSQSQueueDeadletter:
       Type: AWS::SQS::Queue
       Properties:
@@ -70,6 +95,6 @@ resources:
       DependsOn: StorePwhintSQSQueue
       Type: AWS::SNS::Subscription
       Properties:
-        Endpoint: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-pwhint-store-request" ] ]  }
+        Endpoint: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-pwhint-store-request" ] ] }
         Protocol: SQS
-        TopicArn: { "Fn::Join" : ["", ["arn:aws:sns:us-east-1:", { "Ref" : "AWS::AccountId" }, ":fpw-pwhint-store-request" ] ]  }
+        TopicArn: { "Fn::Join" : ["", ["arn:aws:sns:", { "Ref" : "AWS::Region" }, ":", { "Ref" : "AWS::AccountId" }, ":fpw-pwhint-store-request" ] ] }
