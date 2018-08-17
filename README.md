@@ -1,6 +1,6 @@
 # Pwhint Store SQS Worker Lambda
 
-Process events to store password hints.  When requests are submitted from the REST API to store password hints, an SNS event is fired.  An SQS queue subscribes to these events and this worker processes these SQS messages.
+Process events to store password hints.  When requests are submitted from the REST API to store password hints, an SNS event is fired.  An SQS queue created in this project subscribes to these events and this worker processes these SQS messages.  Password hints are stored in an encrypted S3 bucket.
 
 ## Setup
 
@@ -34,15 +34,6 @@ sls invoke local \
     -f fpw-pwhint-store-sqsworker \
     -p ./events/ValidStoreSQSRequest.json \
     -l
-```
-
-## Invoke Integration Tests
-
-```shell
-# will export environment variables needed for serverless.yml
-source ./exports.sh api-dev fpwdev
-
-sls invoke test
 ```
 
 # License
