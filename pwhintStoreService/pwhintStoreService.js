@@ -5,13 +5,13 @@ const logger = require('../logger')
 class PwhintStoreService {
   constructor() {}
 
-  async StorePwhint(hint, application, normalizedPhone) {
+  async storePwhint(hint, application, normalizedPhone) {
     logger.info(`Storing hint for ${normalizedPhone}, application: ${application}, hint:(${hint.length} chars)`)
 
     // Note: all data validation and massaging should have been done in the
     // REST API ahead of time so no need to reproduce that here
 
-    let s3key = `users/${normalizedPhone}/${application}.json`
+    let s3key = `users/${normalizedPhone}/data/${application}.json`
 
     let data = {
       hint: hint

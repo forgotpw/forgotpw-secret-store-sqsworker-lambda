@@ -57,7 +57,7 @@ async function processMessage(messageBody, receiptHandle) {
   }
 
   const pwhintStoreService = new PwhintStoreService()
-  await pwhintStoreService.StorePwhint(
+  await pwhintStoreService.storePwhint(
     message.hint,
     message.application,
     message.normalizedPhone)
