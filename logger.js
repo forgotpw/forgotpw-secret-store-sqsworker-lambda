@@ -11,7 +11,7 @@ if (process.stdout.isTTY) {
 }
 
 module.exports = bunyan.createLogger({
-    name: 'pwhint-service',
+    name: 'forgotpw-secret-store-sqsworker',
     streams: [
         {
             level: config.LOG_LEVEL,

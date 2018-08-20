@@ -1,6 +1,6 @@
-# Pwhint Store SQS Worker Lambda
+# Secret Store SQS Worker Lambda
 
-Process events to store password hints.  When requests are submitted from the REST API to store password hints, an SNS event is fired.  An SQS queue created in this project subscribes to these events and this worker processes these SQS messages.  Password hints are stored in an encrypted S3 bucket.
+Process events to store secrets.  When requests are submitted from the REST API to store secrets such as password hints, an SNS event is fired.  An SQS queue created in this project subscribes to these events and this worker processes these SQS messages.  Secrets are stored in an encrypted S3 bucket.
 
 ## Setup
 
@@ -31,7 +31,7 @@ sls \
 nvm use 8.10.0
 
 sls invoke local \
-    -f fpw-pwhint-store-sqsworker \
+    -f fpw-secret-store-sqsworker \
     -p ./events/ValidStoreSQSRequest.json \
     -l
 ```

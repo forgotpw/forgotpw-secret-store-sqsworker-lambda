@@ -2,10 +2,10 @@ const AWS = require('aws-sdk')
 const config = require('../config')
 const logger = require('../logger')
 
-class PwhintStoreService {
+class SecretStoreService {
   constructor() {}
 
-  async storePwhint(hint, application, normalizedPhone) {
+  async storeSecret(hint, application, normalizedPhone) {
     logger.info(`Storing hint for ${normalizedPhone}, application: ${application}, hint:(${hint.length} chars)`)
 
     // Note: all data validation and massaging should have been done in the
@@ -41,4 +41,4 @@ class PwhintStoreService {
   }
 }
 
-module.exports = PwhintStoreService
+module.exports = SecretStoreService

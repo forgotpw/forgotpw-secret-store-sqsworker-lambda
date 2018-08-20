@@ -1,4 +1,4 @@
-service: pwhint-store-sqsworker
+service: secret-store-sqsworker
 
 # pin to a specific Serverless version
 # frameworkVersion: "=1.29.1"
@@ -23,7 +23,7 @@ provider:
             - 'arn:aws:sqs'
             - Ref: 'AWS::Region'
             - Ref: 'AWS::AccountId'
-            - 'forgotpw-pwhint-store'
+            - 'forgotpw-secret-store'
     -
       Effect: Allow
       Action:
@@ -34,40 +34,40 @@ plugins:
   - serverless-mocha-plugin
 
 functions:
-  fpw-pwhint-store-sqsworker:
-    name: 'fpw-pwhint-store-sqsworker'
+  fpw-secret-store-sqsworker:
+    name: 'fpw-secret-store-sqsworker'
     handler: index.handler
     package:
       exclude:
         - .git/**
     environment:
-      STORE_SQS_QUEUE_NAME: fpw-pwhint-store-request
+      STORE_SQS_QUEUE_NAME: fpw-secret-store-request
       USERDATA_S3_BUCKET: forgotpw-userdata-${opt:awsEnv, 'dev'}
       LOG_LEVEL: 'debug'
     events:
       - sqs:
           arn:
             Fn::GetAtt:
-              - "StorePwhintSQSQueue"
+              - "StoreSecretSQSQueue"
               - "Arn"
           batchSize: 10
 
 resources:
   Resources:
-    StorePwhintSQSQueue:
+    StoreSecretSQSQueue:
       Type: AWS::SQS::Queue
       Properties: 
-        QueueName: fpw-pwhint-store-request
+        QueueName: fpw-secret-store-request
         ReceiveMessageWaitTimeSeconds: 20
         VisibilityTimeout: 30
         MessageRetentionPeriod: 345600 # seconds (4 days)
         RedrivePolicy: 
           deadLetterTargetArn: 
             Fn::GetAtt: 
-              - "StorePwhintSQSQueueDeadletter"
+              - "StoreSecretSQSQueueDeadletter"
               - "Arn"
           maxReceiveCount: 5
-    StorePwhintSQSQueuePolicy:
+    StoresecretSQSQueuePolicy:
       Type: 'AWS::SQS::QueuePolicy'
       Properties:
         PolicyDocument:
@@ -79,22 +79,22 @@ resources:
               Principal: "*"
               Action:
                 - 'sqs:SendMessage'
-              Resource: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-pwhint-store-request" ] ] }
+              Resource: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-secret-store-request" ] ] }
               Condition:
                 ArnEquals:
-                  aws:SourceArn: { "Fn::Join" : ["", ["arn:aws:sns:", { "Ref" : "AWS::Region" }, ":", { "Ref" : "AWS::AccountId" }, ":fpw-pwhint-store-request" ] ] }
+                  aws:SourceArn: { "Fn::Join" : ["", ["arn:aws:sns:", { "Ref" : "AWS::Region" }, ":", { "Ref" : "AWS::AccountId" }, ":fpw-secret-store-request" ] ] }
         Queues:
-          - { "Fn::Join" : ["", ["https://sqs.", { "Ref" : "AWS::Region" }, ".amazonaws.com/", { "Ref" : "AWS::AccountId" }, "/fpw-pwhint-store-request" ] ] }
+          - { "Fn::Join" : ["", ["https://sqs.", { "Ref" : "AWS::Region" }, ".amazonaws.com/", { "Ref" : "AWS::AccountId" }, "/fpw-secret-store-request" ] ] }
       DependsOn:
-        - StorePwhintSQSQueue
-    StorePwhintSQSQueueDeadletter:
+        - StoreSecretSQSQueue
+    StoreSecretSQSQueueDeadletter:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: fpw-pwhint-store-request-deadletter
-    StorePwhintSNSSubscription:
-      DependsOn: StorePwhintSQSQueue
+        QueueName: fpw-secret-store-request-deadletter
+    StoreSecretSNSSubscription:
+      DependsOn: StoreSecretSQSQueue
       Type: AWS::SNS::Subscription
       Properties:
-        Endpoint: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-pwhint-store-request" ] ] }
+        Endpoint: { "Fn::Join" : [":", ["arn:aws:sqs", { "Ref" : "AWS::Region" }, { "Ref" : "AWS::AccountId" }, "fpw-secret-store-request" ] ] }
         Protocol: SQS
-        TopicArn: { "Fn::Join" : ["", ["arn:aws:sns:", { "Ref" : "AWS::Region" }, ":", { "Ref" : "AWS::AccountId" }, ":fpw-pwhint-store-request" ] ] }
+        TopicArn: { "Fn::Join" : ["", ["arn:aws:sns:", { "Ref" : "AWS::Region" }, ":", { "Ref" : "AWS::AccountId" }, ":fpw-secret-store-request" ] ] }
