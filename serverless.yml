@@ -1,7 +1,7 @@
 service: secret-store-sqsworker
 
 # pin to a specific Serverless version
-# frameworkVersion: "=1.29.1"
+frameworkVersion: ">=1.2.0 <2.0.0"
 
 provider:
   name: aws
@@ -33,13 +33,14 @@ provider:
 plugins:
   - serverless-mocha-plugin
 
+package:
+  exclude:
+    - .git/**
+
 functions:
   fpw-secret-store-sqsworker:
     name: 'fpw-secret-store-sqsworker'
     handler: index.handler
-    package:
-      exclude:
-        - .git/**
     environment:
       STORE_SQS_QUEUE_NAME: fpw-secret-store-request
       USERDATA_S3_BUCKET: forgotpw-userdata-${opt:awsEnv, 'dev'}
