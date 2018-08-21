@@ -24,7 +24,7 @@ provider:
             - 'arn:aws:sqs'
             - Ref: 'AWS::Region'
             - Ref: 'AWS::AccountId'
-            - 'forgotpw-secret-store-request'
+            - 'fpw-secret-store-request'
     -
       Effect: Allow
       Action:
