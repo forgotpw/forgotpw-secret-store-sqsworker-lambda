@@ -16,6 +16,7 @@ provider:
       Action:
         - sqs:GetQueueUrl
         - sqs:ReceiveMessage
+        - sqs:DeleteMessage
       Resource:
         - 'Fn::Join':
           - ':'
@@ -23,7 +24,7 @@ provider:
             - 'arn:aws:sqs'
             - Ref: 'AWS::Region'
             - Ref: 'AWS::AccountId'
-            - 'forgotpw-secret-store'
+            - 'forgotpw-secret-store-request'
     -
       Effect: Allow
       Action:
