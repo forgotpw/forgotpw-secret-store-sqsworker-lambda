@@ -13,6 +13,11 @@ resource "aws_dynamodb_table" "confirmation_code" {
     type = "S"
   }
 
+  ttl {
+    attribute_name = "DynamoExpireTime"
+    enabled = true
+  }
+
   lifecycle {
     ignore_changes = ["read_capacity", "write_capacity"]
   }
