@@ -61,11 +61,6 @@ async function processMessage(messageBody, receiptHandle) {
     message.hint,
     message.application,
     message.normalizedPhone)
-
-  await secretStoreService.sendConfirmationCode(
-    message.application,
-    message.normalizedPhone
-  )
   await deleteMessage(receiptHandle)
 }
 
