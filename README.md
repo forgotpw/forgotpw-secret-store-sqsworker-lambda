@@ -29,6 +29,9 @@ sls \
 ```shell
 # ensure we are matching the version of node used by lambda
 nvm use 8.10.0
+# needed to enable proper use of aws profiles with serverless framework
+export AWS_SDK_LOAD_CONFIG=1
+export AWS_ENV="dev" && export PROFILE="fpw$AWS_ENV"
 
 sls invoke local \
     -f fpw-secret-store-sqsworker \

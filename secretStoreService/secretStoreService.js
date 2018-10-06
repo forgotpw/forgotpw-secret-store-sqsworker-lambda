@@ -8,6 +8,7 @@ class SecretStoreService {
   constructor() {}
 
   async storeSecret(hint, application, normalizedPhone) {
+    application = normalizeApplication(application)
     logger.info(`Storing hint for ${normalizedPhone}, application: ${application}, hint:(${hint.length} chars)`)
 
     // Note: all data validation and massaging should have been done in the
@@ -42,6 +43,22 @@ class SecretStoreService {
     logger.info(`Successfully updated ${body.length} chars to s3://${config.USERDATA_S3_BUCKET}/${s3key}`)
   }
 
+}
+
+// normalize algorithm must match for store and retrieve
+function normalizeApplication(application) {
+  try {
+    application = application.trim()
+    application = application.toLowerCase()
+    // replace spaces with dashes
+    application = application.replace(/\s+/g, '-')
+    // remove non alphanumeric characters
+    applicaiton = application.replace(/\W/g, '')
+  }
+  catch (err) {
+    logger.error(`Error normalizing application string ${application}:`, err)
+  }
+  return application
 }
 
 module.exports = SecretStoreService
