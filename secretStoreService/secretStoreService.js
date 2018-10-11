@@ -53,7 +53,9 @@ function normalizeApplication(application) {
     // replace spaces with dashes
     application = application.replace(/\s+/g, '-')
     // remove non alphanumeric characters
-    applicaiton = application.replace(/\W/g, '')
+    application = application.replace(/\W/g, '')
+    // make sure there are no double dashes
+    application = application.replace(/--/g, "-")
   }
   catch (err) {
     logger.error(`Error normalizing application string ${application}:`, err)
