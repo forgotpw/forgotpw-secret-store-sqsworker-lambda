@@ -7,16 +7,16 @@ const TwilioSmsPlus = require('twilio-sms-plus')
 class SecretStoreService {
   constructor() {}
 
-  async storeSecret(hint, application, normalizedPhone) {
-    application = normalizeApplication(application)
-    logger.info(`Storing hint for ${normalizedPhone}, application: ${application}, hint:(${hint.length} chars)`)
+  async storeSecret(hint, rawApplication, normalizedApplication, normalizedPhone) {
+    logger.info(`Storing hint for ${normalizedPhone}, application: ${normalizedApplication}, hint:(${hint.length} chars)`)
 
     // Note: all data validation and massaging should have been done in the
     // REST API ahead of time so no need to reproduce that here
 
-    let s3key = `users/${normalizedPhone}/data/${application}.json`
+    let s3key = `users/${normalizedPhone}/data/${normalizedApplication}.json`
 
     let data = {
+      rawApplication: rawApplication,
       hint: hint
     }
     let body = JSON.stringify(data)
@@ -43,24 +43,6 @@ class SecretStoreService {
     logger.info(`Successfully updated ${body.length} chars to s3://${config.USERDATA_S3_BUCKET}/${s3key}`)
   }
 
-}
-
-// normalize algorithm must match for store and retrieve
-function normalizeApplication(application) {
-  try {
-    application = application.trim()
-    application = application.toLowerCase()
-    // replace spaces with dashes
-    application = application.replace(/\s+/g, '-')
-    // remove non alphanumeric characters
-    application = application.replace(/\W/g, '')
-    // make sure there are no double dashes
-    application = application.replace(/--/g, "-")
-  }
-  catch (err) {
-    logger.error(`Error normalizing application string ${application}:`, err)
-  }
-  return application
 }
 
 module.exports = SecretStoreService

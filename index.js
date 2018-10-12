@@ -59,7 +59,8 @@ async function processMessage(messageBody, receiptHandle) {
   const secretStoreService = new SecretStoreService()
   await secretStoreService.storeSecret(
     message.hint,
-    message.application,
+    message.rawApplication,
+    message.normalizedApplication,
     message.normalizedPhone)
   await deleteMessage(receiptHandle)
 }
