@@ -33,7 +33,11 @@ nvm use 8.10.0
 export AWS_SDK_LOAD_CONFIG=1
 export AWS_ENV="dev" && export PROFILE="fpw$AWS_ENV"
 
-sls invoke local \
+# pip install iam-starter
+iam-starter \
+    --role role-ops-devops \
+    --profile $PROFILE \
+    --command sls invoke local \
     -f fpw-secret-store-sqsworker \
     -p ./events/ValidStoreSQSRequest.json \
     -l

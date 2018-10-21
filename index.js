@@ -3,7 +3,7 @@
 const AWS = require('aws-sdk')
 const config = require('./config')
 const logger = require('./logger')
-const SecretStoreService = require('./secretStoreService/secretStoreService')
+const SecretStoreService = require('./lib/secretStoreService')
 
 async function handler(event, context, done) {
   // raw console log output easier to copy/paste json from cloudwatch logs
@@ -58,10 +58,10 @@ async function processMessage(messageBody, receiptHandle) {
 
   const secretStoreService = new SecretStoreService()
   await secretStoreService.storeSecret(
-    message.hint,
+    message.secret,
     message.rawApplication,
     message.normalizedApplication,
-    message.normalizedPhone)
+    message.userToken)
   await deleteMessage(receiptHandle)
 }
 
