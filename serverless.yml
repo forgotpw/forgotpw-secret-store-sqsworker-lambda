@@ -36,7 +36,7 @@ provider:
       Effect: Allow
       Action:
         - s3:GetObject
-      Resource: arn:aws:s3:::forgotpw-usertokens-*
+      Resource: arn:aws:s3:::forgotpw-usertokens-${env:AWS_ENV, 'dev'}/*
       
 
 plugins:
