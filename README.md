@@ -14,14 +14,8 @@ npm install serverless -g
 ## Deploy
 
 ```shell
-# needed to enable proper use of aws profiles with serverless framework
-export AWS_SDK_LOAD_CONFIG=1
 export AWS_ENV="dev" && export PROFILE="fpw$AWS_ENV"
-
-sls \
-    deploy \
-    --aws-profile $PROFILE \
-    --verbose
+iam-starter --profile $PROFILE --command sls deploy --verbose
 ```
 
 ## Invoke Locally
@@ -29,8 +23,6 @@ sls \
 ```shell
 # ensure we are matching the version of node used by lambda
 nvm use 8.10.0
-# needed to enable proper use of aws profiles with serverless framework
-export AWS_SDK_LOAD_CONFIG=1
 export AWS_ENV="dev" && export PROFILE="fpw$AWS_ENV"
 
 # pip install iam-starter
