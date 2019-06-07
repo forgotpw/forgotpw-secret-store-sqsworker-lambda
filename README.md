@@ -1,5 +1,7 @@
 # Secret Store SQS Worker Lambda
 
+**NOTE: Rosa (www.rosa.bot) is the new name for ForgotPW**
+
 Process events to store secrets.  When requests are submitted from the REST API to store secrets such as password hints, an SNS event is fired.  An SQS queue created in this project subscribes to these events and this worker processes these SQS messages.  Secrets are stored in an encrypted S3 bucket.
 
 ## Setup
